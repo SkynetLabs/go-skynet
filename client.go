@@ -44,8 +44,13 @@ func NewCustom(portalURL string, customOptions Options) SkynetClient {
 	}
 }
 
+type Header struct {
+	Key string
+	Value string
+}
+
 // executeRequest makes and executes a request.
-func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, error) {
+func (sc *SkynetClient) executeRequest(config requestOptions, headers ...Header) (*http.Response, error) {
 	url := sc.PortalURL
 	method := config.method
 	reqBody := config.reqBody
@@ -81,6 +86,10 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	}
 	if opts.customContentType != "" {
 		req.Header.Set("Content-Type", opts.customContentType)
+	}
+
+	for _, h := range headers {
+		req.Header.Set(h.Key, h.Value)
 	}
 
 	// Execute the request.

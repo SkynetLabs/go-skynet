@@ -69,7 +69,7 @@ var (
 )
 
 // Upload uploads the given generic data and returns the skylink.
-func (sc *SkynetClient) Upload(uploadData UploadData, opts UploadOptions) (skylink string, err error) {
+func (sc *SkynetClient) Upload(uploadData UploadData, opts UploadOptions, headers ...Header) (skylink string, err error) {
 	// prepare formdata
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -133,6 +133,7 @@ func (sc *SkynetClient) Upload(uploadData UploadData, opts UploadOptions) (skyli
 			reqBody: body,
 			query:   values,
 		},
+		headers...,
 	)
 	if err != nil {
 		return "", errors.AddContext(err, "could not execute request")
@@ -153,7 +154,7 @@ func (sc *SkynetClient) Upload(uploadData UploadData, opts UploadOptions) (skyli
 }
 
 // UploadFile uploads a file to Skynet and returns the skylink.
-func (sc *SkynetClient) UploadFile(path string, opts UploadOptions) (skylink string, err error) {
+func (sc *SkynetClient) UploadFile(path string, opts UploadOptions, headers ...Header) (skylink string, err error) {
 	path = gopath.Clean(path)
 
 	// Open the file.
@@ -174,11 +175,11 @@ func (sc *SkynetClient) UploadFile(path string, opts UploadOptions) (skylink str
 	uploadData := make(UploadData)
 	uploadData[filename] = file
 
-	return sc.Upload(uploadData, opts)
+	return sc.Upload(uploadData, opts, headers...)
 }
 
 // UploadDirectory uploads a local directory to Skynet and returns the skylink.
-func (sc *SkynetClient) UploadDirectory(path string, opts UploadOptions) (skylink string, err error) {
+func (sc *SkynetClient) UploadDirectory(path string, opts UploadOptions, headers ...Header) (skylink string, err error) {
 	path = gopath.Clean(path)
 
 	// Verify the given path is a directory.
@@ -218,7 +219,7 @@ func (sc *SkynetClient) UploadDirectory(path string, opts UploadOptions) (skylin
 		uploadData[filepath] = file
 	}
 
-	return sc.Upload(uploadData, opts)
+	return sc.Upload(uploadData, opts, headers...)
 }
 
 // createFormFileContentType is based on multipart.Writer.CreateFormFile, except
