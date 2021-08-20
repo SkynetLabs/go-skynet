@@ -1,5 +1,3 @@
-github.com/SkynetLabs/go-skynet/v2 v2.0.1 h1:c5x/onhWwap9p9QgcGZtep580vUYdcIdCgAHueyksyM=
-github.com/SkynetLabs/go-skynet/v2 v2.0.1/go.mod h1:uhGD1M7Qe1nXsnqRD90B5CJVgjqSqwJUmDosgAn4CdQ=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542/go.mod h1:Ow0tF8D4Kplbc8s8sSb3V2oUCygFHVp8gC3Dn6U4MNI=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=
