@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	skynet "github.com/SkynetLabs/go-skynet/v2"
+	"github.com/SkynetLabs/go-skynet/v2"
 	"gopkg.in/h2non/gock.v1"
 )
 
