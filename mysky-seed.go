@@ -148,7 +148,7 @@ func PhraseToSeed(phrase string) (entropy [16]byte, err error) {
 		return entropy, errors.New("seed phrase must be 15 words")
 	}
 
-	// Get the indexes of the words.
+	// Get the index of each word.
 	var wordInts [13]uint16
 	for i := 0; i < 13; i++ {
 		// Figure out which word this is.
