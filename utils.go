@@ -66,7 +66,7 @@ func DefaultOptions(endpointPath string) Options {
 func DefaultPortalURL() string {
 	portal, exists := os.LookupEnv("SKYNET_PORTAL")
 	if exists {
-		return portal
+		return "https://"+portal
 	}
 	return DefaultSkynetPortalURL
 }
