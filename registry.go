@@ -14,33 +14,31 @@ import (
 	"go.sia.tech/siad/types"
 )
 
-// UpdateRegistry will update a registry entry to a new value. It will
-// overwrite whatever is already in the registry.
+// OverwriteRegistry will overwrite an existing registry entry, replacing it
+// with the provided value.
 //
 // WARNING: Improper use of this function can cause data loss, and has caused
-// users data loss in the past. A common mistake is to read the registry entry
-// first, see that it is blank (due to either a 404, a timeout, or an
-// unreliable read), and then call UpdateRegistry with some new data.
-// UpdateRegistry then will see the real data (because it does not 404 when it
-// tries to read), set the revision number correctly, and then obliterate the
-// user's existing data.
+// users data loss in the past. The common mistake is to first read from the
+// registry entry, see that nothing is there, and then call OverwriteRegistry
+// with new data. If the initial read fasely returned 404 or was subject to a
+// race condition which prevented it from seeing the most recent data (both
+// very common on Skynet), the resulting call to OverwriteRegistry can cause
+// data loss. You should ONLY use OverwriteRegistry on registry entries that
+// are not storing user data.
 //
-// WARNING (continued): If you are using UpdateRegistry, ensure that you do not
-// care whether anything is already written in the registry. If you are reading
-// the registry entry first to check that it is empty, you need to ensure that
-// you save the revision number and use that revision number to perform any
-// updates. As this function does not accept a revision number as an input, you
-// cannot use the registry safely in that scenario.
+// An example of an acceptable use of this function is to deploy application
+// updates to skynet. Because a newly updated application is fully independent
+// of previously deployed applications, it is okay if previous data gets lost.
 //
-// TODO: I am contemplating not supporting this function at all, and instead
-// jumping straight to a more sophisticated read/write system like getsetjson
-// to eliminate the footgun. I am certain that the warnings will be ignored and
-// that user data will be lost.
-//
-// TODO: I'm not sure this is the simplest/cleanest API for managing the
-// dataKey. An improvement is probably going to require adding some helper
-// functions for computing the v2skylinks.
-func (sc *SkynetClient) UpdateRegistry(dataKey crypto.Hash, data []byte, secretKey crypto.SecretKey) error {
+// An example of an unacceptable use of this function would be to update a list
+// of a user's files. When updating the list, the new update depends on
+// information previously stored in the registry (the new update is a
+// combination of the previous data + the new data). Using OverwriteRegistry
+// for this purpose WILL cause data loss. Instead, use a pattern where the
+// registry revision number is set on the read, guaranteeing that the write
+// will not cause a loss of data in the event of a network error or network
+// race condition.
+func (sc *SkynetClient) OverwriteRegistry(dataKey crypto.Hash, data []byte, secretKey crypto.SecretKey) error {
 	// TODO: Change this to fetch a host list from the portal so that we
 	// can sign all of the host pubkeys and support primary registry
 	// entries.
@@ -54,11 +52,11 @@ func (sc *SkynetClient) UpdateRegistry(dataKey crypto.Hash, data []byte, secretK
 	srv := modules.NewRegistryValue(dataKey, data, 0, modules.RegistryTypeWithoutPubkey).Sign(secretKey)
 	req := api.RegistryHandlerRequestPOST{
 		PublicKey: spk,
-		DataKey: srv.Tweak,
-		Revision: srv.Revision,
+		DataKey:   srv.Tweak,
+		Revision:  srv.Revision,
 		Signature: srv.Signature,
-		Data: srv.Data,
-		Type: srv.Type,
+		Data:      srv.Data,
+		Type:      srv.Type,
 	}
 
 	// Marshal into JSON.
@@ -71,7 +69,7 @@ func (sc *SkynetClient) UpdateRegistry(dataKey crypto.Hash, data []byte, secretK
 	_, err = sc.executeRequest(
 		requestOptions{
 			Options: DefaultOptions("/skynet/registry"),
-			method: "POST",
+			method:  "POST",
 			reqBody: bytes.NewReader(reqBytes),
 		},
 	)

@@ -7,6 +7,8 @@ import (
 	"gitlab.com/NebulousLabs/errors"
 )
 
+type Seed [16]byte
+
 // The dictionary for mysky.
 var myskyDictionary = []string{
 	"abbey", "ablaze", "abort", "absorb", "abyss", "aces", "aching", "acidic",
@@ -141,11 +143,11 @@ var myskyDictionary = []string{
 
 // PhraseToSeed will convert a seed phrase to a seed, verifying the checksum
 // along the way.
-func PhraseToSeed(phrase string) (entropy [16]byte, err error) {
+func PhraseToSeed(phrase string) (seed Seed, err error) {
 	// Get the words from the seed.
 	words := strings.Split(phrase, " ")
 	if len(words) != 15 {
-		return entropy, errors.New("seed phrase must be 15 words")
+		return seed, errors.New("seed phrase must be 15 words")
 	}
 
 	// Get the index of each word.
@@ -160,16 +162,16 @@ func PhraseToSeed(phrase string) (entropy [16]byte, err error) {
 		}
 		// Check that the word exists.
 		if myskyDictionary[j][:3] != words[i][:3] {
-			return entropy, errors.New("invalid seed word")
+			return seed, errors.New("invalid seed word")
 		}
 		// Check that the word is not overlapping the version bits.
 		if i == 12 && j > 256 {
-			return entropy, errors.New("13th word of seed phrase is invalid")
+			return seed, errors.New("13th word of seed phrase is invalid")
 		}
 		wordInts[i] = j
 	}
 
-	// Convert the words into entropy. This is copied from the skynet-js
+	// Convert the words into seed. This is copied from the skynet-js
 	// implementation.
 	curByte := 0
 	curBit := 0
@@ -182,7 +184,7 @@ func PhraseToSeed(phrase string) (entropy [16]byte, err error) {
 		for j := 0; j < wordBits; j++ {
 			bitSet := (word & (1 << (wordBits - j - 1))) > 0
 			if bitSet {
-				entropy[curByte] |= 1 << (8 - curBit -1)
+				seed[curByte] |= 1 << (8 - curBit - 1)
 			}
 			curBit++
 			if curBit >= 8 {
@@ -194,38 +196,38 @@ func PhraseToSeed(phrase string) (entropy [16]byte, err error) {
 
 	// Verify the checksum of the phrase. This is copied from the skynet-js
 	// implementation.
-	checksum := sha512.Sum512(entropy[:])
-	word1 := uint32(checksum[0]) << 8; // shift first word to leave room for second
-	word1 += uint32(checksum[1]) // load seconds word
-	word1 >>= 6 // downshift so only 10 bits total are used
+	checksum := sha512.Sum512(seed[:])
+	word1 := uint32(checksum[0]) << 8 // shift first word to leave room for second
+	word1 += uint32(checksum[1])      // load seconds word
+	word1 >>= 6                       // downshift so only 10 bits total are used
 	if words[13] != myskyDictionary[word1] {
-		return entropy, errors.New("checksum does not match")
+		return seed, errors.New("checksum does not match")
 	}
 	word2 := uint32(checksum[1]) << 10 // Load high so we can clear already used bits
-	word2 &= 0xffff // clear the 2 already used bits
-	word2 += uint32(checksum[2]) << 2 // load second word, also loaded high
-	word2 >>= 6 // downshift so only 10 bits total are used
+	word2 &= 0xffff                    // clear the 2 already used bits
+	word2 += uint32(checksum[2]) << 2  // load second word, also loaded high
+	word2 >>= 6                        // downshift so only 10 bits total are used
 	if words[14] != myskyDictionary[word2] {
-		return entropy, errors.New("checksum does not match")
+		return seed, errors.New("checksum does not match")
 	}
 
-	return entropy, nil
+	return seed, nil
 }
 
 // SeedToPhrase will return the phrase for a given mysky seed.
-func SeedToPhrase(entropy [16]byte) string {
-	// Convert the entropy to the first 13 words. This is copied from the
+func SeedToPhrase(seed Seed) string {
+	// Convert the seed to the first 13 words. This is copied from the
 	// skynet-js implementation.
 	curWord := 0
 	curBit := 0
 	wordBits := 10
 	var phrase string
 	for i := 0; i < 16; i++ {
-		nextByte := entropy[i]
+		nextByte := seed[i]
 		for j := 0; j < 8; j++ {
-			bitSet := (nextByte & (1 << (8-j-1))) > 0
+			bitSet := (nextByte & (1 << (8 - j - 1))) > 0
 			if bitSet {
-				curWord |= 1 << (wordBits -curBit-1)
+				curWord |= 1 << (wordBits - curBit - 1)
 			}
 			curBit++
 			if curBit >= wordBits {
@@ -242,23 +244,23 @@ func SeedToPhrase(entropy [16]byte) string {
 
 	// Determine the checksum of the phrase. This is copied from the
 	// skynet-js implementation.
-	checksum := sha512.Sum512(entropy[:])
-	word1 := uint32(checksum[0]) << 8; // shift first word to leave room for second
-	word1 += uint32(checksum[1]) // load seconds word
-	word1 >>= 6 // downshift so only 10 bits total are used
+	checksum := sha512.Sum512(seed[:])
+	word1 := uint32(checksum[0]) << 8 // shift first word to leave room for second
+	word1 += uint32(checksum[1])      // load seconds word
+	word1 >>= 6                       // downshift so only 10 bits total are used
 	phrase += myskyDictionary[word1]
 	phrase += " "
 	word2 := uint32(checksum[1]) << 10 // Load high so we can clear already used bits
-	word2 &= 0xffff // clear the 2 already used bits
-	word2 += uint32(checksum[2]) << 2 // load second word, also loaded high
-	word2 >>= 6 // downshift so only 10 bits total are used
+	word2 &= 0xffff                    // clear the 2 already used bits
+	word2 += uint32(checksum[2]) << 2  // load second word, also loaded high
+	word2 >>= 6                        // downshift so only 10 bits total are used
 	phrase += myskyDictionary[word2]
 
-	// As a consistency check, convert the phrase back to entropy. This
+	// As a consistency check, convert the phrase back to seed. This
 	// will both verify the checksum is valid and also verify that seed
-	// results in the same entropy when converted back.
+	// results in the same seed when converted back.
 	verifiedEntropy, err := PhraseToSeed(phrase)
-	if err != nil || verifiedEntropy != entropy {
+	if err != nil || verifiedEntropy != seed {
 		panic("checksum did not match validation")
 	}
 	return phrase
