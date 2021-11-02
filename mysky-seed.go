@@ -7,6 +7,18 @@ import (
 	"gitlab.com/NebulousLabs/errors"
 )
 
+// Seed is the skynet seed.
+//
+// NOTE: This seed does not have much in the way of memory protection. If you
+// use this seed, you will have copies of the seed floating around in memory.
+// I'm not sure if golang wipes memory before returning it to the operating
+// system, but in the event that it does not, this seed can be sniffed by
+// programs that are attempting to extract it using side-channels. Since this
+// package is mainly expected to be used alongside cli packages, it was
+// determined that the effort of making a safe seed api was not worth the
+// tradeoff. Any functions in this package that deal with the seed should take
+// care to only be used on secured computers, or otherwise used in contexts
+// where leaking the seed to an attacker is not a big deal.
 type Seed [16]byte
 
 // The dictionary for mysky.
