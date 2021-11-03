@@ -44,7 +44,7 @@ func (sc *SkynetClient) ReadRegistry(spk types.SiaPublicKey, dataKey crypto.Hash
 		requestOptions{
 			Options: DefaultOptions("/skynet/registry"),
 			method:  "GET",
-			query: values,
+			query:   values,
 		},
 	)
 	if err != nil {
@@ -86,10 +86,10 @@ func (sc *SkynetClient) ReadRegistry(spk types.SiaPublicKey, dataKey crypto.Hash
 	// Verify the signature on the response.
 	srv := modules.SignedRegistryValue{
 		RegistryValue: modules.RegistryValue{
-			Tweak: dataKey,
-			Data: data,
+			Tweak:    dataKey,
+			Data:     data,
 			Revision: rhg.Revision,
-			Type: rhg.Type,
+			Type:     rhg.Type,
 		},
 		Signature: sig,
 	}
