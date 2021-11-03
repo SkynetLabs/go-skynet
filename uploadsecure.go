@@ -3,7 +3,6 @@ package skynet
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -101,7 +100,6 @@ func (sc *SkynetClient) uploadFileSecure(path string, dryRun bool) (skylinkStr s
 		return "", errors.New("backup header exceeded the maximum size")
 	}
 	reqBody := bytes.NewReader(append(encodedHeader, baseSector...))
-	fmt.Println(len(baseSector))
 
 	// Perform the request.
 	resp, err := sc.executeRequest(
@@ -119,7 +117,6 @@ func (sc *SkynetClient) uploadFileSecure(path string, dryRun bool) (skylinkStr s
 	if err != nil {
 		return "", errors.AddContext(err, "unable to parse upload response")
 	}
-	fmt.Println(string(respBody.Bytes()))
 	var srp api.SkynetRestorePOST
 	err = json.Unmarshal(respBody.Bytes(), &srp)
 	if err != nil {
