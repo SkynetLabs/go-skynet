@@ -177,7 +177,7 @@ func PhraseToSeed(phrase string) (seed Seed, err error) {
 			return seed, errors.New("invalid seed word")
 		}
 		// Check that the word is not overlapping the version bits.
-		if i == 12 && j > 256 {
+		if i == 12 && j > 255 {
 			return seed, errors.New("13th word of seed phrase is invalid")
 		}
 		wordInts[i] = j
