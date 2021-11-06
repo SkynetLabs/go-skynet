@@ -151,4 +151,4 @@ fullcover: clean
 	@printf 'Full coverage on $(cpkg):'
 	@go tool cover -func fullcover/fullcover.out | tail -n -1 | awk '{$$1=""; $$2=""; sub(" ", " "); print}'
 
-.PHONY: all fmt install release clean test test-v test-long cover
+.PHONY: all fmt install release clean test test-v test-long cover whitepaper
