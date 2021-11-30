@@ -10,3 +10,9 @@ An SDK for integrating Skynet into Go applications.
 ## Documentation
 
 For documentation complete with examples, please see [the Skynet SDK docs](https://siasky.net/docs/?go#introduction).
+
+## Links
+
+For the CLI built on top of this SDK, see [SkynetLabs/skynet-cli](https://github.com/SkynetLabs/skynet-cli).
+
+For a more feature-rich server SDK, see [SkynetLabs/nodejs-skynet](https://github.com/SkynetLabs/nodejs-skynet).
