@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -83,7 +84,7 @@ func makeResponseError(resp *http.Response) error {
 	}
 
 	var apiResponse ErrorResponse
-	message := string(body.Bytes())
+	message := body.String()
 	err = json.Unmarshal(body.Bytes(), &apiResponse)
 	if err == nil {
 		message = apiResponse.Message
@@ -110,17 +111,17 @@ func makeURL(portalURL, path, extraPath string, query url.Values) string {
 }
 
 // parseResponseBody parses the response body.
-func parseResponseBody(resp *http.Response) (respBody *bytes.Buffer, err error) {
-	defer func() {
-		err = errors.Extend(err, resp.Body.Close())
-	}()
-
-	// parse the response
-	respBody = &bytes.Buffer{}
-	_, err = respBody.ReadFrom(resp.Body)
+func parseResponseBody(resp *http.Response) (*bytes.Buffer, error) {
+	bz, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.AddContext(err, "could not parse response body")
 	}
+
+	// TODO (jay-dee7) find a graceful way to handle this
+	defer resp.Body.Close()
+
+	// parse the response
+	respBody := bytes.NewBuffer(bz)
 
 	return respBody, nil
 }
