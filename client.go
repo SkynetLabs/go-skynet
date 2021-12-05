@@ -18,12 +18,11 @@ type (
 
 	// requestOptions contains the options for a request.
 	requestOptions struct {
+		reqBody io.Reader
+		query   url.Values
 		Options
-
 		method    string
-		reqBody   io.Reader
 		extraPath string
-		query     url.Values
 	}
 )
 
@@ -44,13 +43,8 @@ func NewCustom(portalURL string, customOptions Options) SkynetClient {
 	}
 }
 
-type Header struct {
-	Key string
-	Value string
-}
-
 // executeRequest makes and executes a request.
-func (sc *SkynetClient) executeRequest(config requestOptions, headers ...Header) (*http.Response, error) {
+func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, error) {
 	url := sc.PortalURL
 	method := config.method
 	reqBody := config.reqBody
@@ -66,6 +60,10 @@ func (sc *SkynetClient) executeRequest(config requestOptions, headers ...Header)
 	if config.CustomUserAgent != "" {
 		opts.CustomUserAgent = config.CustomUserAgent
 	}
+	if config.CustomCookie != "" {
+		opts.CustomCookie = config.CustomCookie
+	}
+
 	if config.customContentType != "" {
 		opts.customContentType = config.customContentType
 	}
@@ -84,12 +82,11 @@ func (sc *SkynetClient) executeRequest(config requestOptions, headers ...Header)
 	if opts.CustomUserAgent != "" {
 		req.Header.Set("User-Agent", opts.CustomUserAgent)
 	}
+	if opts.CustomCookie != "" {
+		req.Header.Set("Cookie", opts.CustomCookie)
+	}
 	if opts.customContentType != "" {
 		req.Header.Set("Content-Type", opts.customContentType)
-	}
-
-	for _, h := range headers {
-		req.Header.Set(h.Key, h.Value)
 	}
 
 	// Execute the request.

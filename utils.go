@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -33,6 +32,10 @@ type (
 		// CustomUserAgent is the custom user agent to use.
 		CustomUserAgent string
 
+		// CustomCookie is the hack-way for liking uploads with your skynet account and pinning them
+		// it's just a header with key "Cookie"
+		CustomCookie string
+
 		// customContentType is the custom content type to use. Set internally.
 		customContentType string
 	}
@@ -55,8 +58,7 @@ var (
 // DefaultOptions returns the default options with the given endpoint path.
 func DefaultOptions(endpointPath string) Options {
 	return Options{
-		EndpointPath: endpointPath,
-
+		EndpointPath:    endpointPath,
 		APIKey:          "",
 		CustomUserAgent: "",
 	}
@@ -78,8 +80,8 @@ func makeResponseError(resp *http.Response) error {
 	if err != nil {
 		return errors.AddContext(err, "could not read from response body")
 	}
-	err = resp.Body.Close()
-	if err != nil {
+
+	if err = resp.Body.Close(); err != nil {
 		return errors.AddContext(err, "could not close response body")
 	}
 
@@ -112,18 +114,16 @@ func makeURL(portalURL, path, extraPath string, query url.Values) string {
 
 // parseResponseBody parses the response body.
 func parseResponseBody(resp *http.Response) (*bytes.Buffer, error) {
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
+	buf := &bytes.Buffer{}
+
+	if _, err := buf.ReadFrom(resp.Body); err != nil {
 		return nil, errors.AddContext(err, "could not parse response body")
 	}
-
 	// TODO (jay-dee7) find a graceful way to handle this
 	defer resp.Body.Close()
 
 	// parse the response
-	respBody := bytes.NewBuffer(bz)
-
-	return respBody, nil
+	return buf, nil
 }
 
 // walkDirectory walks a given directory recursively, returning the paths of all
