@@ -2,6 +2,7 @@ package skynet
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -81,7 +82,7 @@ func makeResponseError(resp *http.Response) error {
 		return errors.AddContext(err, "could not read from response body")
 	}
 
-	if err = resp.Body.Close(); err != nil {
+	if err = resp.Body.Close(); err != nil && err != context.Canceled {
 		return errors.AddContext(err, "could not close response body")
 	}
 
