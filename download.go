@@ -3,7 +3,6 @@ package skynet
 import (
 	"bytes"
 	"io"
-	"net/http"
 	"net/url"
 	"os"
 	gopath "path"
@@ -90,23 +89,4 @@ func (sc *SkynetClient) DownloadFile(path, skylink string, opts DownloadOptions)
 
 	_, err = io.Copy(out, downloadData)
 	return errors.AddContext(err, "could not copy data to file at "+path)
-}
-
-// Metadata downloads metadata from the given skylink.
-func (sc *SkynetClient) Metadata(skylink string, opts MetadataOptions) (http.Header, error) {
-
-	config := requestOptions{
-		Options:   opts.Options,
-		method:    http.MethodHead,
-		reqBody:   nil,
-		extraPath: "",
-		query:     map[string][]string{},
-	}
-
-	resp, err := sc.executeRequest(config)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Header, nil
 }
