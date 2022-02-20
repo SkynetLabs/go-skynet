@@ -20,7 +20,7 @@ type (
 
 // Metadata downloads metadata from the given skylink.
 func (sc *SkynetClient) Metadata(skylink string, opts MetadataOptions) (*Metadata, error) {
-	skylink = strings.TrimLeft(skylink, "sia://")
+	skylink = strings.TrimPrefix(skylink, "sia://")
 
 	config := requestOptions{
 		query:     map[string][]string{},
@@ -38,7 +38,6 @@ func (sc *SkynetClient) Metadata(skylink string, opts MetadataOptions) (*Metadat
 	// Metadata API's biggest use case is for checking content-length and using is for concurrent downloads
 	// If contentLength is missing, it's sort of is equivalent of an error
 	if resp.Header.Get("content-length") == "" {
-		fmt.Println("SKYNET: failed to get header: ", err.Error())
 		return nil, fmt.Errorf("error retrieving metadata for skylink: %s - ContentLength is absent", skylink)
 	}
 
