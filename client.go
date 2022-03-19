@@ -83,7 +83,10 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 		req.Header.Set("User-Agent", opts.CustomUserAgent)
 	}
 	if opts.CustomCookie != "" {
-		req.Header.Set("Cookie", opts.CustomCookie)
+		req.AddCookie(&http.Cookie{
+			Name:  "skynet-jwt",
+			Value: opts.CustomCookie,
+		})
 	}
 	if opts.customContentType != "" {
 		req.Header.Set("Content-Type", opts.customContentType)
