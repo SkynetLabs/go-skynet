@@ -39,6 +39,9 @@ type (
 
 		// customContentType is the custom content type to use. Set internally.
 		customContentType string
+
+		// option to add custom http client, defaults to http.DefaultClient
+		HttpClient *http.Client
 	}
 )
 
@@ -62,6 +65,7 @@ func DefaultOptions(endpointPath string) Options {
 		EndpointPath:    endpointPath,
 		APIKey:          "",
 		CustomUserAgent: "",
+		HttpClient:      http.DefaultClient,
 	}
 }
 
