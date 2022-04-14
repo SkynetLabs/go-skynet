@@ -59,6 +59,9 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	if config.APIKey != "" {
 		opts.APIKey = config.APIKey
 	}
+	if config.SkynetAPIKey != "" {
+		opts.SkynetAPIKey = config.SkynetAPIKey
+	}
 	if config.CustomUserAgent != "" {
 		opts.CustomUserAgent = config.CustomUserAgent
 	}
@@ -76,6 +79,9 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	}
 	if opts.APIKey != "" {
 		req.SetBasicAuth("", opts.APIKey)
+	}
+	if opts.SkynetAPIKey != "" {
+		req.Header.Set("Skynet-Api-Key", opts.SkynetAPIKey)
 	}
 	if opts.CustomUserAgent != "" {
 		req.Header.Set("User-Agent", opts.CustomUserAgent)
