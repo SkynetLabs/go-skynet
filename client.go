@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"gitlab.com/NebulousLabs/errors"
 )
@@ -39,7 +40,7 @@ func NewCustom(portalURL string, customOptions Options) SkynetClient {
 		portalURL = DefaultPortalURL()
 	}
 	return SkynetClient{
-		PortalURL: portalURL,
+		PortalURL: ensurePrefix(strings.TrimPrefix(portalURL, "http://"), "https://"),
 		Options:   customOptions,
 	}
 }

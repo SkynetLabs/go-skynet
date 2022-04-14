@@ -70,6 +70,15 @@ func DefaultPortalURL() string {
 	return DefaultSkynetPortalURL
 }
 
+// ensurePrefix checks if `str` starts with `prefix` and adds it if that's not
+// the case.
+func ensurePrefix(str, prefix string) string {
+	if strings.HasPrefix(str, prefix) {
+		return str
+	}
+	return prefix + str
+}
+
 // makeResponseError makes an error given an error response.
 func makeResponseError(resp *http.Response) error {
 	body := &bytes.Buffer{}
