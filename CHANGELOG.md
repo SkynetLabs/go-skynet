@@ -1,8 +1,38 @@
 # Changelog
 
-## [2.0.1]
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Types of changes:
+
+- `Added` for new features.
+- `Changed` for changes in existing functionality.
+- `Removed` for now removed features.
+- `Deprecated` for soon-to-be removed features.
+- `Fixed` for any bug fixes.
+- `Security` in case of vulnerabilities.
+
+## [Unreleased]
+
+### Added
+
+- Add `SkynetAPIKey` option.
+
+### Fixed
+
+- Ensure custom portal URLs start with `https://`.
+
+## [2.0.2]
 
 ### Changed
+
+- Made transition from NebulousLabs to SkynetLabs
+
+## [2.0.1]
+
+### Fixed
 
 - Fixed single-file directory uploads being uploaded as files instead of
   directories.
@@ -17,6 +47,9 @@
   API calls, to be applied to all API calls.
 - The `defaultPortalUrl` string has been renamed to `defaultSkynetPortalUrl` and
   `defaultPortalUrl` is now a function.
+
+### Fixed
+
 - Fix a bug where the Content-Type was not set correctly.
 
 ## [1.1.0]
@@ -30,7 +63,7 @@
 - API authentication
 - Encryption
 
-### Changed
+### Fixed
 
 - Some upload bugs were fixed.
 
