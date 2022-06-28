@@ -13,9 +13,9 @@ import (
 type (
 	// SkynetClient is the Skynet Client which can be used to access Skynet.
 	SkynetClient struct {
-		PortalURL  string
 		Options    Options
 		httpClient *http.Client
+		PortalURL  string
 	}
 
 	// requestOptions contains the options for a request.
@@ -45,8 +45,9 @@ func NewCustom(portalURL string, customOptions Options) SkynetClient {
 	}
 
 	return SkynetClient{
-		PortalURL: ensurePrefix(strings.TrimPrefix(portalURL, "http://"), "https://"),
-		Options:   customOptions,
+		PortalURL:  ensurePrefix(strings.TrimPrefix(portalURL, "http://"), "https://"),
+		Options:    customOptions,
+		httpClient: customOptions.HttpClient,
 	}
 }
 

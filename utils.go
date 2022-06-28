@@ -24,27 +24,12 @@ type (
 	// Options contains options used for connecting to a Skynet portal and
 	// endpoint.
 	Options struct {
-		// EndpointPath is the relative URL path of the portal endpoint to
-		// contact.
-		EndpointPath string
-
-		// APIKey is the API password to use for authentication.
-		APIKey string
-		// SkynetAPIKey is the authentication API key to use for a Skynet portal
-		// (sets the "Skynet-Api-Key" header).
-		SkynetAPIKey string
-		// CustomUserAgent is the custom user agent to use.
-		CustomUserAgent string
-
-		// CustomCookie is the hack-way for liking uploads with your skynet account and pinning them
-		// it's just a header with key "Cookie"
-		CustomCookie string
-
-		// customContentType is the custom content type to use. Set internally.
+		HttpClient        *http.Client
+		APIKey            string
+		SkynetAPIKey      string
+		CustomUserAgent   string
 		customContentType string
-
-		// option to add custom http client, defaults to http.DefaultClient
-		HttpClient *http.Client
+		EndpointPath      string
 	}
 )
 

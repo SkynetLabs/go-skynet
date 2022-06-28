@@ -25,7 +25,6 @@ func (sc *SkynetClient) PinSkylink(skylink string) (string, error) {
 				EndpointPath:      PinEndpoint,
 				APIKey:            sc.Options.APIKey,
 				CustomUserAgent:   sc.Options.CustomUserAgent,
-				CustomCookie:      sc.Options.CustomCookie,
 				customContentType: sc.Options.customContentType,
 			},
 			method:    http.MethodPost,
