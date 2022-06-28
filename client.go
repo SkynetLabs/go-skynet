@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"gitlab.com/NebulousLabs/errors"
 )
@@ -44,9 +45,8 @@ func NewCustom(portalURL string, customOptions Options) SkynetClient {
 	}
 
 	return SkynetClient{
-		PortalURL:  portalURL,
-		Options:    customOptions,
-		httpClient: customOptions.HttpClient,
+		PortalURL: ensurePrefix(strings.TrimPrefix(portalURL, "http://"), "https://"),
+		Options:   customOptions,
 	}
 }
 
@@ -64,13 +64,12 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	if config.APIKey != "" {
 		opts.APIKey = config.APIKey
 	}
+	if config.SkynetAPIKey != "" {
+		opts.SkynetAPIKey = config.SkynetAPIKey
+	}
 	if config.CustomUserAgent != "" {
 		opts.CustomUserAgent = config.CustomUserAgent
 	}
-	if config.CustomCookie != "" {
-		opts.CustomCookie = config.CustomCookie
-	}
-
 	if config.customContentType != "" {
 		opts.customContentType = config.customContentType
 	}
@@ -86,14 +85,11 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	if opts.APIKey != "" {
 		req.SetBasicAuth("", opts.APIKey)
 	}
+	if opts.SkynetAPIKey != "" {
+		req.Header.Set("Skynet-Api-Key", opts.SkynetAPIKey)
+	}
 	if opts.CustomUserAgent != "" {
 		req.Header.Set("User-Agent", opts.CustomUserAgent)
-	}
-	if opts.CustomCookie != "" {
-		req.AddCookie(&http.Cookie{
-			Name:  "skynet-jwt",
-			Value: opts.CustomCookie,
-		})
 	}
 	if opts.customContentType != "" {
 		req.Header.Set("Content-Type", opts.customContentType)

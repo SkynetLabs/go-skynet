@@ -30,6 +30,9 @@ type (
 
 		// APIKey is the API password to use for authentication.
 		APIKey string
+		// SkynetAPIKey is the authentication API key to use for a Skynet portal
+		// (sets the "Skynet-Api-Key" header).
+		SkynetAPIKey string
 		// CustomUserAgent is the custom user agent to use.
 		CustomUserAgent string
 
@@ -64,6 +67,7 @@ func DefaultOptions(endpointPath string) Options {
 	return Options{
 		EndpointPath:    endpointPath,
 		APIKey:          "",
+		SkynetAPIKey:    "",
 		CustomUserAgent: "",
 		HttpClient:      http.DefaultClient,
 	}
@@ -76,6 +80,17 @@ func DefaultOptions(endpointPath string) Options {
 // https://github.com/NebulousLabs/skynet-docs/issues/21.
 func DefaultPortalURL() string {
 	return DefaultSkynetPortalURL
+}
+
+// ensurePrefix checks if `str` starts with `prefix` and adds it if that's not
+// the case.
+//
+// NOTE: Taken from `skyd` - see that project for tests.
+func ensurePrefix(str, prefix string) string {
+	if strings.HasPrefix(str, prefix) {
+		return str
+	}
+	return prefix + str
 }
 
 // makeResponseError makes an error given an error response.
