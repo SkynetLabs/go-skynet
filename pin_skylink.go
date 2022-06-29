@@ -23,7 +23,6 @@ func (sc *SkynetClient) PinSkylink(skylink string) (string, error) {
 			query:   url.Values{},
 			Options: Options{
 				EndpointPath:      PinEndpoint,
-				APIKey:            sc.Options.APIKey,
 				CustomUserAgent:   sc.Options.CustomUserAgent,
 				customContentType: sc.Options.customContentType,
 			},

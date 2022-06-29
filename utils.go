@@ -25,7 +25,6 @@ type (
 	// endpoint.
 	Options struct {
 		HttpClient        *http.Client
-		APIKey            string
 		SkynetAPIKey      string
 		CustomUserAgent   string
 		customContentType string
@@ -51,7 +50,6 @@ var (
 func DefaultOptions(endpointPath string) Options {
 	return Options{
 		EndpointPath:    endpointPath,
-		APIKey:          "",
 		SkynetAPIKey:    "",
 		CustomUserAgent: "",
 		HttpClient:      http.DefaultClient,

@@ -62,9 +62,6 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	if config.EndpointPath != "" {
 		opts.EndpointPath = config.EndpointPath
 	}
-	if config.APIKey != "" {
-		opts.APIKey = config.APIKey
-	}
 	if config.SkynetAPIKey != "" {
 		opts.SkynetAPIKey = config.SkynetAPIKey
 	}
@@ -82,9 +79,6 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
 		return nil, errors.AddContext(err, fmt.Sprintf("could not create %v request", method))
-	}
-	if opts.APIKey != "" {
-		req.SetBasicAuth("", opts.APIKey)
 	}
 	if opts.SkynetAPIKey != "" {
 		req.Header.Set("Skynet-Api-Key", opts.SkynetAPIKey)
