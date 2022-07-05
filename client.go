@@ -95,9 +95,5 @@ func (sc *SkynetClient) executeRequest(config requestOptions) (*http.Response, e
 	if err != nil {
 		return nil, errors.AddContext(err, "could not execute request")
 	}
-	if resp.StatusCode >= 400 {
-		return nil, errors.AddContext(makeResponseError(resp), "error code received")
-	}
-
 	return resp, nil
 }
